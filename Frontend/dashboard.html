@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Tutor Dashboard</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+        .card { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; }
+        .question { color: #1a73e8; font-weight: bold; }
+        .answer { color: #34a853; margin-top: 5px; }
+        .timestamp { color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>📚 AI Tutor Dashboard</h1>
+    <div id="conversations">Loading...</div>
+    
+    <script>
+        async function loadConversations() {
+            try {
+                const response = await fetch('/api/conversations');
+                const data = await response.json();
+                
+                const container = document.getElementById('conversations');
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="card">No conversations yet. Send a WhatsApp message to start!</div>';
+                    return;
+                }
+                
+                container.innerHTML = data.map(conv => `
+                    <div class="card">
+                        <div>📱 ${conv.userPhone}</div>
+                        <div class="question">❓ ${conv.question}</div>
+                        <div class="answer">✨ ${conv.answer}</div>
+                        <div class="timestamp">🕐 ${new Date(conv.timestamp).toLocaleString()}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('conversations').innerHTML = '<div class="card">Error loading conversations</div>';
+            }
+        }
+        
+        loadConversations();
+        setInterval(loadConversations, 30000); // Refresh every 30 seconds
+    </script>
+</body>
+</html>
